@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,6 +7,10 @@ public class Tank : MonoBehaviour
 {
     [SerializeField]
     private GameObject fxSmokeBoost = null;
+    [SerializeField]
+    private GameObject fireAttackPrefab = null;
+    [SerializeField]
+    private Transform attackSpawnPoint = null;
     [SerializeField]
     private Transform smokeSpawnPointTrLeft = null;
     [SerializeField]
@@ -34,7 +39,26 @@ public class Tank : MonoBehaviour
         MovingProcess();
         RotateProcess();
         LookProcess();
+        AttackProcess();
     }
+
+    private void AttackProcess()
+    {
+        Vector3 attackSpawnPos = attackSpawnPoint.position;
+        attackSpawnPos.z = attackSpawnPoint.transform.position.z;
+        GameObject go = null;
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            go = Instantiate(fireAttackPrefab, attackSpawnPos, Quaternion.identity);
+            go.transform.SetParent(attackSpawnPoint);
+
+        }
+        else if(Input.GetKeyUp(KeyCode.Q))
+        {
+            Destroy(go);
+        }
+    }
+
     private void RotateProcess()
     {
         float axisH = Input.GetAxis("Horizontal");
@@ -52,32 +76,7 @@ public class Tank : MonoBehaviour
         float oneKeyUpTime = 0f;
         bool isOneKeyDown = false;
 
-        //if (Input.GetKeyUp(KeyCode.UpArrow))
-        //{
-        //    oneKeyUpTime = Time.time;
-        //    isOneKeyDown = true;
-        //}
-        //if (isOneKeyDown == true && ((Time.time - oneKeyUpTime) < doubleKeyInterval))
-        //{
-        //    isOneKeyDown = false;
-        //    Debug.Log("double key ют╥б");
-        //    moveSpeed = 10000f;
-
-        //    Vector3 smokePosLeft = smokeSpawnPointTrLeft.position;
-        //    Vector3 smokePosRight = smokeSpawnPointTrRight.position;
-        //    smokePosLeft.y = 1f;
-        //    smokePosRight.y = 1f;
-        //    bostGoL = Instantiate(fxSmokeBoost, smokePosLeft, Quaternion.Euler(0f, 90f, 0f));
-        //    bostGoR = Instantiate(fxSmokeBoost, smokePosRight, Quaternion.Euler(0f, 90f, 0f));
-        //    bostGoL.transform.SetParent(smokeSpawnPointTrLeft);
-        //    bostGoR.transform.SetParent(smokeSpawnPointTrRight);
-        //    go();
-        //}
-        //else
-        //{
-        //    moveSpeed = moveSpeedCnst;
-        //}
-        if (Input.GetKeyDown(KeyCode.LeftShift))
+        if (Input.GetKeyDown(KeyCode.LeftControl))
         {
 
             moveSpeed = moveSpeed * 5f;
@@ -90,7 +89,7 @@ public class Tank : MonoBehaviour
             bostGoL.transform.SetParent(smokeSpawnPointTrLeft);
             bostGoR.transform.SetParent(smokeSpawnPointTrRight);
         }
-        if (Input.GetKeyUp(KeyCode.LeftShift))
+        if (Input.GetKeyUp(KeyCode.LeftControl))
         {
             moveSpeed = moveSpeedCnst;
             Destroy(bostGoL);
